@@ -4,6 +4,8 @@ var begun = false;
 var lastTick;
 var renderTime;
 var deltaTime;
+var fps = 0;
+var countedFrames = 0;
 
 var leftPaddle;
 var rightPaddle;
@@ -48,35 +50,51 @@ $(document).ready(function() {
 	reset();
 
 	lastTick = Date.now();
+	setTimeout(tick);
 
 	setInterval(function() {
 		leftPaddle.update();
 	}, 10);
-	
+
 	setInterval(function() {
-		rightPaddle.update();
-
-		if(begun)
-			ball.update();
-		
-		let renderStart = Date.now();
-
-		clearScreen();
-		drawNet();
-		drawScore();
-		drawInfo();
-
-		leftPaddle.draw();
-		rightPaddle.draw();
-		ball.draw();
-
-		renderTime = Date.now() - renderStart;
-	});
+		fps = countedFrames;
+		countedFrames = 0;
+	}, 1000);
 
 	setTimeout(function() {
 		canPlay = true;
 	}, 2000);
 });
+
+function tick() {
+	update();
+	
+	countedFrames++;
+	
+	let renderStart = Date.now();
+	render();
+	renderTime = Date.now() - renderStart;
+	
+	setTimeout(tick);
+}
+
+function update() {
+	rightPaddle.update();
+
+	if(begun)
+		ball.update();
+}
+
+function render() {
+	clearScreen();
+	drawNet();
+	drawScore();
+	drawInfo();
+
+	leftPaddle.draw();
+	rightPaddle.draw();
+	ball.draw();
+}
 
 function reset() {
 	leftPaddle = new Paddle(false);
@@ -121,9 +139,9 @@ function drawInfo() {
 	lastTick = now;
 
 	drawText("grey", "Montserrat", "", 20, [
-		`Tick: ${deltaTime}ms`,
-		`FPS: ${Math.round(1000 / deltaTime)}`,
-		`Render Time: ${renderTime === undefined ? 0 : renderTime}ms`
+		`Render Time: ${renderTime === undefined ? 0 : renderTime}ms`,
+		`FPS: ${fps} / ${Math.round(1000 / deltaTime)}`,
+		`Tick: ${deltaTime}ms`
 	], [10, 10], ["left", "bottom"], 5);
 }
 

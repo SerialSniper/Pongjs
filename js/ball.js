@@ -40,7 +40,7 @@ class Ball {
             this.direction.y *= -1;
             this.y = this.side / 2;
             
-			playNote(250, 10);
+			playNote(250, 20);
         }
 
         // lower wall collision
@@ -48,7 +48,7 @@ class Ball {
             this.direction.y *= -1;
             this.y = canvas.height - this.side / 2;
             
-			playNote(250, 10);
+			playNote(250, 20);
         }
 
         // left score collision
@@ -82,7 +82,7 @@ class Ball {
 
             this.x = (leftPaddle.x + leftPaddle.width / 2) + this.side / 2;
             
-			playNote(500, 10);
+			playNote(500, 20);
         }
         
         // right paddle collision
@@ -98,7 +98,7 @@ class Ball {
 
             this.x = (rightPaddle.x - rightPaddle.width / 2) - this.side / 2;
             
-			playNote(500, 10);
+			playNote(500, 20);
         }
     }
 }
