@@ -26,7 +26,6 @@ body {
 
 .title img {
     width: 7vw;
-    filter: invert();
 }
 
 .title-hider {
