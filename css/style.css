@@ -37,7 +37,7 @@ body {
 
     width: 0%;
 
-    animation: 1s ease-in-out .1s 1 unhide forwards;
+    animation: 1s ease-in-out .5s 1 unhide forwards;
 }
 
 .title-centerer {
