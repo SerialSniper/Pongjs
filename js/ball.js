@@ -57,7 +57,7 @@ class Ball {
             nextBall = true;
             reset();
             
-			playNote(200, 500);
+			playNote(170, 500);
         }
 
         // right score collision
@@ -66,7 +66,7 @@ class Ball {
             nextBall = false;
             reset();
             
-			playNote(200, 500);
+			playNote(170, 500);
         }
 
         // left paddle collision

@@ -103,6 +103,7 @@ function reset() {
 
 	up = false;
 	down = false;
+	mouseDown = false;
 
 	begun = false;
 }
@@ -178,10 +179,6 @@ $(window).on("keydown", function(event) {
 			begun = true;
 			down = true;
 			break;
-		
-		case 32:
-			begun = true;
-			break;
 	}
 
 	if(event.which >= 48 && event.which <= 58) {
@@ -201,4 +198,22 @@ $(window).on("keyup", function(event) {
 			down = false;
 			break;
 	}
+});
+
+$(window).on("mousemove", function(event) {
+	mouseX = event.pageX;
+	mouseY = event.pageY;
+});
+
+$(window).on("mousedown", function(event) {
+	if(!canPlay) return;
+
+	begun = true;
+	mouseDown = true;
+});
+
+$(window).on("mouseup", function(event) {
+	if(!canPlay) return;
+	
+	mouseDown = false;
 });

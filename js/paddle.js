@@ -2,6 +2,9 @@ const offset = 50;
 
 var up = false;
 var down = false;
+var mouseX = undefined;
+var mouseY = undefined;
+var mouseDown = false;
 
 class Paddle {
 	x;
@@ -34,6 +37,13 @@ class Paddle {
 
     update() {
         if(this.rightSide) {
+			if(mouseDown) {
+				if(mouseY < rightPaddle.y)
+					this.y -= this.speed * (deltaTime / 1000);
+				if(mouseY > rightPaddle.y)
+					this.y += this.speed * (deltaTime / 1000);
+			}
+			
             if(up) this.y -= this.speed * (deltaTime / 1000);
             if(down) this.y += this.speed * (deltaTime / 1000);
         } else {
