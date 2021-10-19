@@ -11,6 +11,13 @@ class Ball {
         y: 0
     }
 
+    constructor() {
+        if(!multiplayer) {
+            this.speed *= (difficulty / 2);
+            this.acceleration *= difficulty;
+        }
+    }
+
 	draw() {
 		ctx.fillStyle = getTheme(theme, false);
 		ctx.fillRect(
@@ -19,6 +26,14 @@ class Ball {
 			this.side,
 			this.side
 		);
+
+        if(debug) {
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x + this.direction.x * 2000, this.y + this.direction.y * 2000);
+            ctx.stroke();
+        }
 	}
 
     update() {
@@ -26,6 +41,9 @@ class Ball {
         if(this.direction.x == 0 && this.direction.y == 0) {
             let baseAngle = (nextBall ? 0 : 180) - 45;
 
+            if(multiplayer)
+                baseAngle = (Math.round(Math.random()) * 180) - 45;
+            
             this.direction.x = Math.cos(rad(baseAngle + Math.random() * 90));
             this.direction.y = Math.sin(rad(baseAngle + Math.random() * 90));
         }
@@ -40,7 +58,7 @@ class Ball {
             this.direction.y *= -1;
             this.y = this.side / 2;
             
-			playNote(250, 20);
+			playNote(247, 20);
         }
 
         // lower wall collision
@@ -48,7 +66,7 @@ class Ball {
             this.direction.y *= -1;
             this.y = canvas.height - this.side / 2;
             
-			playNote(250, 20);
+			playNote(247, 20);
         }
 
         // left score collision

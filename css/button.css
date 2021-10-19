@@ -1,0 +1,89 @@
+.button {
+    position: relative;
+    margin: 10px;
+    padding: 20px;
+    font-size: 3vw;
+    display: inline-block;
+    cursor: pointer;
+    
+    border: solid 10px white;
+    /* background: linear-gradient(0, white 50%, black 50%, black 100%); */
+
+    background-size: 100% 200% !important;
+    background-position: 0 0 !important;
+    transition: .2s;
+
+    display: inline-flex;
+    justify-content: center;
+}
+
+.button span {
+    /* mix-blend-mode: difference; */
+    color: white;
+    transition: .2s;
+    z-index: 2;
+}
+
+.button:hover span {
+    color: black;
+    transition: .2s;
+}
+
+.button::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    background-color: white;
+    transition: .2s;
+}
+
+.button:hover::before {
+    height: 100%;
+}
+
+.button-hider {
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    margin-top: 50px;
+}
+
+.difficulty-title {
+    width: 100%;
+    text-align: center;
+    border-bottom: solid 3px white;
+    height: 1.1em;
+    margin-bottom: 30px;
+}
+
+.difficulty-title h1 {
+    font-weight: normal;
+    background-color: black;
+    display: inline;
+    padding: 0 10px;
+}
+
+
+
+.button#sp:hover { border: solid 10px lime; }
+.button#sp:hover::before { background-color: lime; }
+
+.button#mp:hover { border: solid 10px red; }
+.button#mp:hover::before { background-color: red; }
+
+
+
+.button#noob:hover { border: solid 10px blue; }
+.button#noob:hover::before { background-color: blue; }
+
+.button#ez:hover { border: solid 10px lime; }
+.button#ez:hover::before { background-color: lime; }
+
+.button#hard:hover { border: solid 10px red; }
+.button#hard:hover::before { background-color: red; }
+
+.button#crazy:hover { border: solid 10px magenta; }
+.button#crazy:hover::before { background-color: magenta; }

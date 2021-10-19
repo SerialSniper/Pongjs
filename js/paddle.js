@@ -2,6 +2,9 @@ const offset = 50;
 
 var up = false;
 var down = false;
+var leftUp = false;
+var leftDown = false;
+
 var mouseX = undefined;
 var mouseY = undefined;
 var mouseDown = false;
@@ -11,17 +14,15 @@ class Paddle {
 	y = canvas.height / 2;
 	width = 15;
 	height = 70;
-    rightSide;
-
-    speed = 1000; // px/s
-    queue = new Array(5).fill(this.y);
+	side;
+    speed = 1000;
 	
-	constructor(rightSide) {
-        this.rightSide = rightSide;
+	constructor(side) {
+        this.side = side;
 
-		if(rightSide == false)
+		if(side == "left")
 			this.x = offset;
-		if(rightSide == true)
+		if(side == "right")
 			this.x = canvas.width - offset;
 	}
 	
@@ -36,25 +37,40 @@ class Paddle {
 	}
 
     update() {
-        if(this.rightSide) {
-			if(mouseDown) {
-				if(mouseY < rightPaddle.y)
-					this.y -= this.speed * (deltaTime / 1000);
-				if(mouseY > rightPaddle.y)
-					this.y += this.speed * (deltaTime / 1000);
-			}
-			
-            if(up) this.y -= this.speed * (deltaTime / 1000);
-            if(down) this.y += this.speed * (deltaTime / 1000);
-        } else {
-            this.y = this.queue.shift();
-            this.queue.push(ball.y);
-        }
-        
+		if(mouseDown && !multiplayer) {
+			if(mouseY < rightPaddle.y)
+				this.y -= this.speed * (deltaTime / 1000);
+			if(mouseY > rightPaddle.y)
+				this.y += this.speed * (deltaTime / 1000);
+		}
+		
+		if(this.side == "right") {
+			if(up) this.y -= this.speed * (deltaTime / 1000);
+			if(down) this.y += this.speed * (deltaTime / 1000);
+		} else if(this.side == "left") {
+			if(leftUp) this.y -= this.speed * (deltaTime / 1000);
+			if(leftDown) this.y += this.speed * (deltaTime / 1000);
+		}
+		
+		this.collide();
+    }
+
+	collide() {
         if(this.y + this.height / 2 >= canvas.height)
             this.y = canvas.height - this.height / 2;
 
         if(this.y - this.height / 2 <= 0)
             this.y = this.height / 2;
-    }
+	}
+}
+
+class PaddleAI extends Paddle {
+    queue = new Array(Number.parseInt(10 / difficulty)).fill(this.y);
+	
+	update() {
+		this.y = this.queue.shift();
+		this.queue.push(ball.y);
+		
+		this.collide();
+	}
 }

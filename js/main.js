@@ -11,6 +11,10 @@ var leftPaddle;
 var rightPaddle;
 var ball;
 
+var multiplayer = false;
+var difficulty = 1;
+var debug = false;
+
 var themes = [
 	[ 255, 255, 255 ],
 	[ 255,   0,   0 ],
@@ -41,6 +45,14 @@ var score = {
 var nextBall = true;
 
 $(document).ready(function() {
+	setTimeout(function() {
+		$(".title").animateAuto("width", 1000, function() {
+			setTimeout(function() {
+				$(".animatable").animateAuto("height", 700);
+			}, 500);
+		});
+	}, 500);
+
 	playNote(1, 1);
 
 	canvas = document.getElementById("mainCanvas");
@@ -53,7 +65,8 @@ $(document).ready(function() {
 	setTimeout(tick);
 
 	setInterval(function() {
-		leftPaddle.update();
+		if(!multiplayer)
+			leftPaddle.update();
 	}, 10);
 
 	setInterval(function() {
@@ -61,12 +74,65 @@ $(document).ready(function() {
 		countedFrames = 0;
 	}, 1000);
 
-	setTimeout(function() {
-		canPlay = true;
-	}, 2000);
+	$("#sp").on("click", function() {
+		multiplayer = false;
+
+		$("#main-button-wrapper").addClass("hidden");
+		$("#difficulty-button-wrapper").removeClass("hidden");
+		$(".animatable").animateAuto("height", 700);
+
+		$("#difficulty-button-wrapper > .button").each(function(index) {
+			$(this).on("click", function() {
+				difficulty = index + 1;
+
+				start();
+			});
+		});
+	});
+
+	$("#mp").on("click", function() {
+		multiplayer = true;
+		
+		start();
+	});
 });
 
+function start() {
+	$("#mainCanvas").animate({ opacity: "100%" }, 500);
+	$(".animatable").animate({ opacity: "0%" }, 500, function() {
+		$(".animatable").css({ display: "none" });
+	});
+
+	canPlay = true;
+
+	reset();
+}
+
 function tick() {
+	if(score.left == 10 || score.right == 10) {
+		canPlay = false;
+
+		$("#mainCanvas").addClass("blur");
+
+		if(multiplayer) {
+			if(score.left == 10) {
+				$("#left").addClass("visible");
+				$("#left").animate({ opacity: "100%" }, 500);
+			} else if(score.right == 10) {
+				$("#right").addClass("visible");
+				$("#right").animate({ opacity: "100%" }, 500);
+			}
+		} else {
+			if(score.left == 10) {
+				$("#lost").addClass("visible");
+				$("#lost").animate({ opacity: "100%" }, 500);
+			} else if(score.right == 10) {
+				$("#won").addClass("visible");
+				$("#won").animate({ opacity: "100%" }, 500);
+			}
+		}
+	}
+
 	update();
 	
 	countedFrames++;
@@ -79,6 +145,12 @@ function tick() {
 }
 
 function update() {
+	if(!canPlay)
+		return;
+
+	if(multiplayer)
+		leftPaddle.update();
+	
 	rightPaddle.update();
 
 	if(begun)
@@ -97,12 +169,14 @@ function render() {
 }
 
 function reset() {
-	leftPaddle = new Paddle(false);
-	rightPaddle = new Paddle(true);
+	leftPaddle = multiplayer ? new Paddle("left") : new PaddleAI("left");
+	rightPaddle = new Paddle("right");
 	ball = new Ball();
 
 	up = false;
 	down = false;
+	leftUp = false;
+	leftDown = false;
 	mouseDown = false;
 
 	begun = false;
@@ -128,22 +202,33 @@ function drawNet() {
 		canvas.height / 5 / 20 * 3,
 		canvas.height / 5 / 20 * 2
 	]);
+
 	ctx.beginPath();
 	ctx.moveTo(canvas.width / 2, 0);
 	ctx.lineTo(canvas.width / 2, canvas.height);
 	ctx.stroke();
+
+	ctx.lineWidth = 1;
+	ctx.setLineDash([]);
 }
 
 function drawInfo() {
 	var now = Date.now();
 	deltaTime = now - lastTick;
 	lastTick = now;
+	
+	let margin = 5;
 
 	drawText("grey", "Montserrat", "", 20, [
 		`Render Time: ${renderTime === undefined ? 0 : renderTime}ms`,
 		`FPS: ${fps} / ${Math.round(1000 / deltaTime)}`,
 		`Tick: ${deltaTime}ms`
-	], [10, 10], ["left", "bottom"], 5);
+	], [10, 10], ["left", "bottom"], margin);
+
+	ctx.textAlign = "right";
+	ctx.fillText("Difficulty", canvas.width - margin, (20 + margin) * 1);
+	ctx.fillStyle = ["blue", "lime", "red", "magenta"][difficulty - 1];
+	ctx.fillText($("#difficulty-button-wrapper > .button").eq(difficulty - 1).text().replaceAll(/\s/g,''), canvas.width - margin, (20 + margin) * 2);
 }
 
 function drawText(color, font, fontStyle, fontSize, text, position, align, margin) {
@@ -167,8 +252,6 @@ function rad(deg) {
 }
 
 $(window).on("keydown", function(event) {
-	if(!canPlay) return;
-
 	switch(event.which) {
 		case 38:
 			begun = true;
@@ -179,6 +262,18 @@ $(window).on("keydown", function(event) {
 			begun = true;
 			down = true;
 			break;
+
+		case 87:
+			if(!multiplayer) return;
+			begun = true;
+			leftUp = true;
+			break;
+
+		case 83:
+			if(!multiplayer) return;
+			begun = true;
+			leftDown = true;
+			break;
 	}
 
 	if(event.which >= 48 && event.which <= 58) {
@@ -187,8 +282,6 @@ $(window).on("keydown", function(event) {
 });
 
 $(window).on("keyup", function(event) {
-	if(!canPlay) return;
-
 	switch(event.which) {
 		case 38:
 			up = false;
@@ -196,6 +289,16 @@ $(window).on("keyup", function(event) {
 			
 		case 40:
 			down = false;
+			break;
+
+		case 87:
+			if(!multiplayer) return;
+			leftUp = false;
+			break;
+
+		case 83:
+			if(!multiplayer) return;
+			leftDown = false;
 			break;
 	}
 });
@@ -206,28 +309,24 @@ $(window).on("mousemove", function(event) {
 });
 
 $(window).on("mousedown", function(event) {
-	if(!canPlay) return;
+	if(multiplayer) return;
 
 	begun = true;
 	mouseDown = true;
 });
 
 $(window).on("mouseup", function(event) {
-	if(!canPlay) return;
+	if(multiplayer) return;
 	
 	mouseDown = false;
 });
 
 window.addEventListener("touchmove", function(event) {
-	if(!canPlay) return;
-	
 	mouseX = event.touches[0].pageX;
 	mouseY = event.touches[0].pageY;
 }, false);
 
 window.addEventListener("touchstart", function(event) {
-	if(!canPlay) return;
-	
 	mouseX = event.touches[0].pageX;
 	mouseY = event.touches[0].pageY;
 
@@ -236,7 +335,22 @@ window.addEventListener("touchstart", function(event) {
 }, false);
 
 window.addEventListener("touchend", function(event) {
-	if(!canPlay) return;
-	
 	mouseDown = false;
 }, false);
+
+jQuery.fn.animateAuto = function(prop, speed, callback) {
+    var elem, height, width;
+    return this.each(function(i, el) {
+        el = jQuery(el), elem = el.clone().css({"height": "auto", "width": "auto"}).appendTo(el.parent());
+        height = elem.css("height"),
+        width = elem.css("width"),
+        elem.remove();
+        
+        if(prop === "height")
+            el.animate({"height": height}, speed, callback);
+        else if(prop === "width")
+            el.animate({"width": width}, speed, callback);
+        else if(prop === "both")
+            el.animate({"width": width,"height": height}, speed, callback);
+    });  
+}

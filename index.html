@@ -26,15 +26,50 @@
 		<link rel="shortcut icon" href="res/icon.png" />
 	</head>
 	<body>
+		<canvas id="mainCanvas" width="100" height="100"></canvas>
 		<div class="title-centerer">
-			<div class="title">
-				<img src="res/icon.png" />
-				<div class="title-hider">
-					<span>Pong.js</span>
+			<div class="animatable">
+				<div class="title">
+					<img src="res/icon.svg" />
+					<div class="title-hider">
+						<span>Pong.js</span>
+					</div>
+				</div>
+				<div class="button-hider">
+					<div id="main-button-wrapper">
+						<div class="button" id="sp">
+							<span>Singleplayer</span>
+						</div>
+						<div class="button" id="mp">
+							<span>Multiplayer</span>
+						</div>
+					</div>
+					<div id="difficulty-button-wrapper" class="hidden">
+						<div>
+							<div class="difficulty-title">
+								<h1>Select Difficulty</h1>
+							</div>
+						</div>
+						<div class="button" id="noob">
+							<span>Noob</span>
+						</div>
+						<div class="button" id="ez">
+							<span>Ez</span>
+						</div>
+						<div class="button" id="hard">
+							<span>Hard</span>
+						</div>
+						<div class="button" id="crazy">
+							<span>Crazy</span>
+						</div>
+					</div>
 				</div>
 			</div>
+			<div id="won" class="result">You Won!</div>
+			<div id="lost" class="result bad">You Lost</div>
+			<div id="right" class="result">Right Player Won!</div>
+			<div id="left" class="result">Left Player Won!</div>
 		</div>
-		<canvas id="mainCanvas" width="100" height="100"></canvas>
 	</body>
 	<script> </script>
 </html>
