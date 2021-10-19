@@ -217,3 +217,26 @@ $(window).on("mouseup", function(event) {
 	
 	mouseDown = false;
 });
+
+window.addEventListener("touchmove", function(event) {
+	if(!canPlay) return;
+	
+	mouseX = event.touches[0].pageX;
+	mouseY = event.touches[0].pageY;
+}, false);
+
+window.addEventListener("touchstart", function(event) {
+	if(!canPlay) return;
+	
+	mouseX = event.touches[0].pageX;
+	mouseY = event.touches[0].pageY;
+
+	begun = true;
+	mouseDown = true;
+}, false);
+
+window.addEventListener("touchend", function(event) {
+	if(!canPlay) return;
+	
+	mouseDown = false;
+}, false);
