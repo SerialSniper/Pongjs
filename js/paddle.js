@@ -1,5 +1,8 @@
 const offset = 50;
 
+var begunLeft = false;
+var begunRight = false;
+
 var up = false;
 var down = false;
 var leftUp = false;

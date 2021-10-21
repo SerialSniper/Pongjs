@@ -93,14 +93,69 @@ body {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
+}
+
+.transparent {
+    opacity: 0;
 }
 
 .visible {
-    display: block;
+    display: block !important;
 }
 
 .blur {
     filter: blur(10px);
     transition: .5s;
+}
+
+#controls-tutorial-wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+}
+
+.controls-tutorial-centerer {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.controls-tutorial {
+    padding: 20px;
+
+    color: black;
+    background-color: white;
+}
+
+.controls-tutorial-inner-wrapper {
+    width: 100%;
+    display: flex;
+}
+
+.controls-tutorial-inner-centerer {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.controls-tutorial-inner {
+    width: 2em;
+    height: 2em;
+    padding: .5em;
+    color: white;
+    background-color: black;
+    font-size: 2em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

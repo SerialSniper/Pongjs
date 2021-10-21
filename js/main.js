@@ -45,13 +45,9 @@ var score = {
 var nextBall = true;
 
 $(document).ready(function() {
-	setTimeout(function() {
-		$(".title").animateAuto("width", 1000, function() {
-			setTimeout(function() {
-				$(".animatable").animateAuto("height", 700);
-			}, 500);
-		});
-	}, 500);
+	$(".title").delay(500).animateAuto("width", 1000, function() {
+		$(".animatable").delay(200).animateAuto("height", 800);
+	});
 
 	playNote(1, 1);
 
@@ -77,6 +73,7 @@ $(document).ready(function() {
 	$("#sp").on("click", function() {
 		multiplayer = false;
 
+		$(".animatable").unAuto();
 		$("#main-button-wrapper").addClass("hidden");
 		$("#difficulty-button-wrapper").removeClass("hidden");
 		$(".animatable").animateAuto("height", 700);
@@ -84,7 +81,6 @@ $(document).ready(function() {
 		$("#difficulty-button-wrapper > .button").each(function(index) {
 			$(this).on("click", function() {
 				difficulty = index + 1;
-
 				start();
 			});
 		});
@@ -92,7 +88,13 @@ $(document).ready(function() {
 
 	$("#mp").on("click", function() {
 		multiplayer = true;
-		
+
+		$("#controls-tutorial-wrapper")
+			.removeClass("hidden")
+			.animate({ opacity: "100%" }, 500, function() {
+				$(this).removeClass("transparent");
+			});
+
 		start();
 	});
 });
@@ -131,6 +133,18 @@ function tick() {
 				$("#won").animate({ opacity: "100%" }, 500);
 			}
 		}
+	}
+
+	if(begunLeft && !$("#controls-tutorial-left").hasClass("hidden")) {
+		$("#controls-tutorial-left").animate({ opacity: "0%" }, 500, function() {
+			$(this).addClass("hidden");
+		});
+	}
+
+	if(begunRight && !$("#controls-tutorial-right").hasClass("hidden")) {
+		$("#controls-tutorial-right").animate({ opacity: "0%" }, 500, function() {
+			$(this).addClass("hidden");
+		});
 	}
 
 	update();
@@ -225,6 +239,9 @@ function drawInfo() {
 		`Tick: ${deltaTime}ms`
 	], [10, 10], ["left", "bottom"], margin);
 
+	if(multiplayer)
+		return;
+
 	ctx.textAlign = "right";
 	ctx.fillText("Difficulty", canvas.width - margin, (20 + margin) * 1);
 	ctx.fillStyle = ["blue", "lime", "red", "magenta"][difficulty - 1];
@@ -255,23 +272,27 @@ $(window).on("keydown", function(event) {
 	switch(event.which) {
 		case 38:
 			begun = true;
+			begunRight = true;
 			up = true;
 			break;
 			
 		case 40:
 			begun = true;
+			begunRight = true;
 			down = true;
 			break;
 
 		case 87:
 			if(!multiplayer) return;
 			begun = true;
+			begunLeft = true;
 			leftUp = true;
 			break;
 
 		case 83:
 			if(!multiplayer) return;
 			begun = true;
+			begunLeft = true;
 			leftDown = true;
 			break;
 	}
@@ -309,24 +330,32 @@ $(window).on("mousemove", function(event) {
 });
 
 $(window).on("mousedown", function(event) {
-	if(multiplayer) return;
+	if(multiplayer)
+		return;
 
 	begun = true;
 	mouseDown = true;
 });
 
 $(window).on("mouseup", function(event) {
-	if(multiplayer) return;
+	if(multiplayer)
+		return;
 	
 	mouseDown = false;
 });
 
 window.addEventListener("touchmove", function(event) {
+	if(multiplayer)
+		return;
+	
 	mouseX = event.touches[0].pageX;
 	mouseY = event.touches[0].pageY;
 }, false);
 
 window.addEventListener("touchstart", function(event) {
+	if(multiplayer)
+		return;
+
 	mouseX = event.touches[0].pageX;
 	mouseY = event.touches[0].pageY;
 
@@ -335,22 +364,43 @@ window.addEventListener("touchstart", function(event) {
 }, false);
 
 window.addEventListener("touchend", function(event) {
+	if(multiplayer)
+		return;
+
 	mouseDown = false;
 }, false);
 
+jQuery.fn.unAuto = function() {
+	this.width(this.width());
+	this.height(this.height());
+}
+
 jQuery.fn.animateAuto = function(prop, speed, callback) {
     var elem, height, width;
+
     return this.each(function(i, el) {
-        el = jQuery(el), elem = el.clone().css({"height": "auto", "width": "auto"}).appendTo(el.parent());
-        height = elem.css("height"),
-        width = elem.css("width"),
+        el = jQuery(el);
+		elem = el.clone().css({"height": "auto", "width": "auto"}).appendTo(el.parent());
+
+        height = elem.css("height");
+        width = elem.css("width");
         elem.remove();
+		
+		function autoize() {
+			el.css({
+				"width": "auto",
+				"height": "auto"
+			});
+
+			if(callback != undefined)
+				callback();
+		}
         
         if(prop === "height")
-            el.animate({"height": height}, speed, callback);
-        else if(prop === "width")
-            el.animate({"width": width}, speed, callback);
-        else if(prop === "both")
-            el.animate({"width": width,"height": height}, speed, callback);
+            el.animate({"height": height}, speed, autoize);
+		else if(prop === "width")
+            el.animate({"width": width}, speed, autoize);
+		else if(prop === "both")
+            el.animate({"width": width, "height": height}, speed, autoize);
     });  
 }
